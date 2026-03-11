@@ -15,6 +15,11 @@ export class AppComponent {
   googleLogin() {
     window.location.href = "https://localhost:7184/api/auth/google-login";
   }
+   faceBookLogin() {
+    window.location.href = "https://localhost:7184/api/auth/facebook-login";
+  }
+
+
 
   microsoftLogin() {
     window.location.href = "https://localhost:7184/api/auth/microsoft-login";
