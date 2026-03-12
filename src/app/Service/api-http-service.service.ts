@@ -2,18 +2,13 @@ import { Injectable } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse,
-  HttpHeaders,
-  HttpParams,
 } from '@angular/common/http';
 import {
-  BehaviorSubject,
   catchError,
-  Subject,
   throwError,
   firstValueFrom,
 } from 'rxjs';
 
-import { ConfirmationService, MessageService } from 'primeng/api';
 import { URI_ENDPOINT, URI_ENDPOINT_WITH_ID, URI_ENDPOINT_WITH_PARAMS } from '../environments/environment';
 
 
@@ -24,7 +19,6 @@ export class ApiHttpServiceService {
 
   constructor(
     private http: HttpClient,
-    public messageService: MessageService,
   ) { }
 
 

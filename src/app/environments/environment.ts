@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  ApiUrl: 'https://localhost:7184/api',
+  ApiUrl: 'https://localhost:7184/api/',
   LogoutUrl: '/',
 };
 

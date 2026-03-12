@@ -18,7 +18,7 @@ import { AdminDashboardComponentComponent } from './Dashboard/admin-dashboard-co
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
