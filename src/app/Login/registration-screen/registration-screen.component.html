@@ -1,0 +1,122 @@
+<div class="h-100">
+  <form [formGroup]="form" class="p-4">
+
+    <!-- MODE RADIO -->
+    <div class="flex gap-4 mb-4">
+      <p-radioButton name="mode" value="Regular_Login" label="General Login" formControlName="mode"></p-radioButton>
+      <p-radioButton name="mode" value="Two_Factor_Authentication" label="2 Factor" formControlName="mode"></p-radioButton>
+      <p-radioButton name="mode" value="Multi_Factor" label="Multi Factor" formControlName="mode"></p-radioButton>
+    </div>
+
+    <!-- ========== GENERAL ========== -->
+    <div *ngIf="form.get('mode')?.value === 'Regular_Login'" formGroupName="general" class="p-fluid">
+      <label for="generalType">Type</label>
+      <p-dropdown id="generalType"
+                  formControlName="type"
+                  [options]="typesOptions"
+                  placeholder="Select Type"
+                  appendTo="body">
+      </p-dropdown>
+
+      <label for="generalName">Name</label>
+      <p-dropdown id="generalName"
+                  formControlName="name"
+                  [options]="namesByTypeMap[form.get('general.type')?.value]"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Select Name"
+                  appendTo="body">
+      </p-dropdown>
+    </div>
+
+    <!-- ========== TWO FACTOR ========== -->
+    <div *ngIf="form.get('mode')?.value === 'Two_Factor_Authentication'" formArrayName="twoFactor">
+      <p-table [value]="twoFactor.controls" class="mt-3">
+        <ng-template pTemplate="header">
+          <tr><th>SNo</th><th>Type</th><th>Name</th><th>Action</th></tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-row let-i="rowIndex">
+          <tr [formGroupName]="i">
+            <td>{{ i + 1 }}</td>
+
+            <td>
+              <p-dropdown formControlName="type"
+                          [options]="typesOptions"
+                          optionLabel="label"
+                          optionValue="value"
+                          placeholder="Select Type"
+                          appendTo="body">
+              </p-dropdown>
+            </td>
+
+            <td>
+              <p-dropdown formControlName="name"
+                          [options]="namesByTypeMap[twoFactor.controls[i].get('type')?.value]"
+                          optionLabel="label"
+                          optionValue="value"
+                          placeholder="Select Name"
+                          appendTo="body">
+              </p-dropdown>
+            </td>
+
+            <td>
+              <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text"
+                      (click)="removeTwoFactorRow(i)"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- ========== MULTI FACTOR ========== -->
+    <div *ngIf="form.get('mode')?.value === 'Multi_Factor'" formArrayName="multiFactor">
+      <div class="flex justify-content-end mb-2">
+        <button pButton type="button" label="Add Row" icon="pi pi-plus" (click)="addMultiRow()"></button>
+      </div>
+
+      <p-table [value]="multiFactor.controls">
+        <ng-template pTemplate="header">
+          <tr><th>SNo</th><th>Type</th><th>Name</th><th>Action</th></tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-row let-i="rowIndex">
+          <tr [formGroupName]="i">
+            <td>{{ i + 1 }}</td>
+
+            <td>
+              <p-dropdown formControlName="type"
+                          [options]="typesOptions"
+                          optionLabel="label"
+                          optionValue="value"
+                          placeholder="Select Type"
+                          appendTo="body">
+              </p-dropdown>
+            </td>
+
+            <td>
+              <p-dropdown formControlName="name"
+                          [options]="namesByTypeMap[multiFactor.controls[i].get('type')?.value]"
+                          optionLabel="label"
+                          optionValue="value"
+                          placeholder="Select Name"
+                          appendTo="body">
+              </p-dropdown>
+            </td>
+
+            <td>
+              <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text"
+                      (click)="removeMultiRow(i)"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="mt-4">
+      <button pButton type="button" label="Submit" [disabled]="form.invalid" (click)="submit()"></button>
+    </div>
+
+  </form>
+</div>

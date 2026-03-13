@@ -1,126 +1,204 @@
-<div class="flex justify-content-center align-items-center min-h-screen"
-     *ngIf="activeScreen === 'Regular_Login'">
-  <p-card styleClass="w-full md:w-6 lg:w-5">
-    <form [formGroup]="loginForm" (ngSubmit)="RegularLogin()">
-      <div class="flex flex-column gap-3">
-        <h3 class="text-center">Login</h3>
-        <div class="flex flex-column gap-2">
-          <label>Email</label>
-          <input
-            pInputText
-            type="email"
-            formControlName="email"
-            class="w-full"
-          />
+<div class="flex justify-content-center align-items-center min-h-screen surface-ground">
+<p-toast/>
+
+  <p-card styleClass="w-full md:w-6 lg:w-4 shadow-4 border-round-xl">
+
+    <div class="flex flex-column gap-4">
+
+      <!-- TITLE -->
+      <div class="text-center">
+        <h2 class="m-0">Welcome Back</h2>
+        <small class="text-color-secondary">Sign in to continue</small>
+      </div>
+
+
+      <!-- REGULAR LOGIN -->
+      <form
+            [formGroup]="loginForm"
+            (ngSubmit)="RegularLogin()">
+
+        <div class="flex flex-column gap-3">
+          <span class="p-float-label">
+            <input pInputText id="email" formControlName="email" class="w-full"/>
+            <label for="email">Email</label>
+          </span>
+
           <small class="p-error"
             *ngIf="submitted && f['email'].errors?.['required']">
             Email is required
           </small>
-          <small class="p-error"
-            *ngIf="submitted && f['email'].errors?.['email']">
-            Enter valid email
-          </small>
-        </div>
-        <div class="flex flex-column gap-2">
-          <label>Password</label>
-          <input
-            pInputText
-            type="password"
-            formControlName="password"
-            class="w-full"
-          />
+
+          <span class="p-float-label">
+            <input pPassword id="password"
+                       formControlName="password"
+
+                       toggleMask="true"
+                       class="w-full"/>
+            <label for="password">Password</label>
+          </span>
+
           <small class="p-error"
             *ngIf="submitted && f['password'].errors?.['required']">
             Password required
           </small>
-          <small class="p-error"
-            *ngIf="submitted && f['password'].errors?.['minlength']">
-            Minimum 6 characters
-          </small>
-        </div>
-        <p-button
-          label="Login"
-          icon="pi pi-user"
-          type="submit"
-          styleClass="w-full">
-        </p-button>
-      </div>
-    </form>
-  </p-card>
-</div>
-<div class="flex justify-content-center align-items-center min-h-screen"
-     *ngIf="activeScreen === 'Google'">
-      <button class="google-btn" (click)="googleLogin()">
-        <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png">
-        Continue with Google
-      </button>
-</div>
-<div class="flex justify-content-center align-items-center min-h-screen"
-     *ngIf="activeScreen === 'Facebook'">
-      <button class="facebook-btn" (click)="faceBookLogin()">
-        <i class="bi bi-facebook"></i>
-        Continue with Facebook
-      </button>
-      </div>
-      <!-- <div class="flex justify-content-center align-items-center min-h-screen"
-     *ngIf="activeScreen === 'Microsoft'">
 
-      <button class="microsoft-btn" (click)="microsoftLogin()">
-        <img src="https://cdn-icons-png.flaticon.com/512/732/732221.png">
-        Continue with Microsoft
-      </button>
-     </div> -->
+          <button
+            pButton
+            type="submit"
+            label="Login"
+            icon="pi pi-sign-in"
+            class="w-full">
+          </button>
 
-     <div class="flex justify-content-center align-items-center min-h-screen"
-     *ngIf="activeScreen === 'AuthenticatorApplication'">
-     <div *ngIf="qrCode">
-  <img [src]="qrCode" alt="Authenticator QR Code" width="200" height="200">
- <div>
-   <p-inputNumber
-    [useGrouping]="false" inputId="otp" [maxlength]="6" [minlength]="6"
-    [(ngModel)]="otp" />
-  <button pButton label="Verify OTP" (click)="verifyOTP()" [disabled]="otp.length < 6 ||otp.length > 6 "></button>
- </div>
-</div>
-     </div>
-      <div class="flex justify-content-center align-items-center min-h-screen"
-     *ngIf="activeScreen === 'Google_Microsoft_Otp_to_Mail'">
-     <form [formGroup]="loginForm" *ngIf="!showOtpSection">
-      <div class="flex flex-column gap-3">
-        <h3 class="text-center">Login</h3>
-        <div class="flex flex-column gap-2">
-          <label>Email</label>
-          <input
-            pInputText
-            type="email"
-            formControlName="email"
-            class="w-full"
-          />
-          <small class="p-error"
-            *ngIf="submitted && f['email'].errors?.['required']">
-            Email is required
-          </small>
-          <small class="p-error"
-            *ngIf="submitted && f['email'].errors?.['email']">
-            Enter valid email
-          </small>
         </div>
-          <p-button
-          label="Login"
-          icon="pi pi-user"
-          type="submit" (onClick)="sendOtpToMail()"
-          styleClass="w-full">
-        </p-button>
+      </form>
+
+
+
+      <!-- GOOGLE LOGIN -->
+      <div>
+
+        <button
+          pButton
+          class="w-full p-button-outlined"
+          (click)="googleLogin()">
+
+          <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png"
+               width="18"
+               class="mr-2">
+
+          Continue with Google
+
+        </button>
+
+      </div>
+       <button
+          pButton
+          class="w-full p-button-outlined"
+          (click)="twitter()">
+          Continue with Twitter
+
+        </button>
+
+
+
+      <!-- FACEBOOK LOGIN -->
+      <div >
+
+        <button
+          pButton
+          class="w-full p-button-info"
+          icon="pi pi-facebook"
+          (click)="faceBookLogin()"
+          label="Continue with Facebook">
+        </button>
+
+      </div>
+      <div >
+
+        <button
+          pButton
+          class="w-full p-button-info"
+          icon="pi pi-facebook"
+          (click)="linkedIn()"
+          label="Continue with LinkedIn">
+        </button>
+
+      </div>
+<div >
+
+        <button
+          pButton
+          class="w-full p-button-info"
+          icon="pi pi-facebook"
+          (click)="github()"
+          label="Continue with GitHub">
+        </button>
+
+      </div>
+
+
+      <!-- AUTHENTICATOR LOGIN -->
+      <div *ngIf="activeScreen === 'AuthenticatorApplication'" class="text-center">
+
+        <div *ngIf="qrCode" class="flex flex-column align-items-center gap-3">
+
+          <img [src]="qrCode" width="200"/>
+
+          <p-inputNumber
+            [(ngModel)]="otp"
+            [useGrouping]="false"
+            inputId="otp"
+            [maxlength]="6"
+            placeholder="Enter OTP">
+          </p-inputNumber>
+
+          <button
+            pButton
+            label="Verify OTP"
+            icon="pi pi-check"
+            (click)="verifyOTP()"
+            [disabled]="otp.length !== 6">
+          </button>
+
         </div>
+
+      </div>
+
+
+
+      <!-- EMAIL OTP LOGIN -->
+      <div *ngIf="activeScreen === 'Google_Microsoft_Otp_to_Mail'">
+
+        <!-- EMAIL FORM -->
+        <form *ngIf="!showOtpSection"
+              [formGroup]="loginForm">
+
+          <div class="flex flex-column gap-3">
+
+            <span class="p-float-label">
+              <input pInputText id="email" formControlName="email" class="w-full"/>
+              <label for="email">Email</label>
+            </span>
+
+            <button
+              pButton
+              label="Send OTP"
+              icon="pi pi-envelope"
+              class="w-full"
+              (click)="sendOtpToMail()">
+            </button>
+
+          </div>
+
         </form>
-        <div *ngIf="showOtpSection">
-  <h3 class="text-center">Enter OTP sent to your email</h3>
-  <div class="flex flex-column gap-2">
-    <div>
-   <p-inputNumber
-    [useGrouping]="false" inputId="otp" [maxlength]="6" [minlength]="6"
-    [(ngModel)]="otp" />
-  <button pButton label="Verify OTP" (click)="verifyOTPOfMail()" [disabled]="otp.length < 6 ||otp.length > 6 "></button>
- </div>
+
+
+        <!-- OTP SECTION -->
+        <div *ngIf="showOtpSection" class="flex flex-column gap-3">
+
+          <h3 class="text-center">Enter OTP sent to your email</h3>
+
+          <p-inputNumber
+            [(ngModel)]="otp"
+            [useGrouping]="false"
+            [maxlength]="6">
+          </p-inputNumber>
+
+          <button
+            pButton
+            label="Verify OTP"
+            icon="pi pi-check"
+            (click)="verifyOTPOfMail()"
+            [disabled]="otp.length !== 6">
+          </button>
+
         </div>
-     </div>
+
+      </div>
+
+    </div>
+
+  </p-card>
+
+</div>

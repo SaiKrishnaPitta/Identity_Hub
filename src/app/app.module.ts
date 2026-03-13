@@ -7,6 +7,10 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { UserDashboardComponentComponent } from './Dashboard/user-dashboard-component/user-dashboard-component.component';
 import { AdminDashboardComponentComponent } from './Dashboard/admin-dashboard-component/admin-dashboard-component.component';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   declarations: [
@@ -19,8 +23,10 @@ import { AdminDashboardComponentComponent } from './Dashboard/admin-dashboard-co
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    ToastModule,
+    BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
