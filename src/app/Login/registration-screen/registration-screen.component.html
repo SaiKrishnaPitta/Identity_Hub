@@ -1,122 +1,244 @@
-<div class="h-100">
-  <form [formGroup]="form" class="p-4">
+<p-toast></p-toast>
 
-    <!-- MODE RADIO -->
-    <div class="flex gap-4 mb-4">
-      <p-radioButton name="mode" value="Regular_Login" label="General Login" formControlName="mode"></p-radioButton>
-      <p-radioButton name="mode" value="Two_Factor_Authentication" label="2 Factor" formControlName="mode"></p-radioButton>
-      <p-radioButton name="mode" value="Multi_Factor" label="Multi Factor" formControlName="mode"></p-radioButton>
-    </div>
+<div class="min-h-screen surface-ground p-4">
+  <div class="flex justify-content-center align-items-start min-h-screen py-4">
+    <div class="w-full max-w-6xl">
 
-    <!-- ========== GENERAL ========== -->
-    <div *ngIf="form.get('mode')?.value === 'Regular_Login'" formGroupName="general" class="p-fluid">
-      <label for="generalType">Type</label>
-      <p-dropdown id="generalType"
-                  formControlName="type"
-                  [options]="typesOptions"
-                  placeholder="Select Type"
-                  appendTo="body">
-      </p-dropdown>
-
-      <label for="generalName">Name</label>
-      <p-dropdown id="generalName"
-                  formControlName="name"
-                  [options]="namesByTypeMap[form.get('general.type')?.value]"
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Select Name"
-                  appendTo="body">
-      </p-dropdown>
-    </div>
-
-    <!-- ========== TWO FACTOR ========== -->
-    <div *ngIf="form.get('mode')?.value === 'Two_Factor_Authentication'" formArrayName="twoFactor">
-      <p-table [value]="twoFactor.controls" class="mt-3">
-        <ng-template pTemplate="header">
-          <tr><th>SNo</th><th>Type</th><th>Name</th><th>Action</th></tr>
-        </ng-template>
-
-        <ng-template pTemplate="body" let-row let-i="rowIndex">
-          <tr [formGroupName]="i">
-            <td>{{ i + 1 }}</td>
-
-            <td>
-              <p-dropdown formControlName="type"
-                          [options]="typesOptions"
-                          optionLabel="label"
-                          optionValue="value"
-                          placeholder="Select Type"
-                          appendTo="body">
-              </p-dropdown>
-            </td>
-
-            <td>
-              <p-dropdown formControlName="name"
-                          [options]="namesByTypeMap[twoFactor.controls[i].get('type')?.value]"
-                          optionLabel="label"
-                          optionValue="value"
-                          placeholder="Select Name"
-                          appendTo="body">
-              </p-dropdown>
-            </td>
-
-            <td>
-              <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text"
-                      (click)="removeTwoFactorRow(i)"></button>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-
-    <!-- ========== MULTI FACTOR ========== -->
-    <div *ngIf="form.get('mode')?.value === 'Multi_Factor'" formArrayName="multiFactor">
-      <div class="flex justify-content-end mb-2">
-        <button pButton type="button" label="Add Row" icon="pi pi-plus" (click)="addMultiRow()"></button>
+      <!-- Header -->
+      <div class="text-center mb-4">
+        <h1 class="text-4xl font-bold text-primary mb-2">Identity Hub</h1>
+        <p class="text-lg text-color-secondary">Choose your preferred authentication method</p>
       </div>
 
-      <p-table [value]="multiFactor.controls">
-        <ng-template pTemplate="header">
-          <tr><th>SNo</th><th>Type</th><th>Name</th><th>Action</th></tr>
-        </ng-template>
+      <!-- Loading State -->
+      <div *ngIf="!providers || providers.length === 0" class="text-center p-4">
+        <p-progressSpinner></p-progressSpinner>
+        <p class="mt-3 text-color-secondary">Loading authentication providers...</p>
+      </div>
 
-        <ng-template pTemplate="body" let-row let-i="rowIndex">
-          <tr [formGroupName]="i">
-            <td>{{ i + 1 }}</td>
+      <!-- Authentication Methods Grid -->
+      <div *ngIf="providers && providers.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-            <td>
-              <p-dropdown formControlName="type"
-                          [options]="typesOptions"
-                          optionLabel="label"
-                          optionValue="value"
-                          placeholder="Select Type"
-                          appendTo="body">
-              </p-dropdown>
-            </td>
+        <!-- Regular Login Card -->
+        <!-- <p-card class="shadow-4 border-round-xl hover:shadow-6 transition-shadow duration-300">
+          <ng-template pTemplate="header">
+            <div class="bg-blue-500 text-white p-3 text-center border-round-top-xl">
+              <i class="pi pi-user text-2xl"></i>
+              <h3 class="mt-2 mb-0">Regular Login</h3>
+            </div>
+          </ng-template>
 
-            <td>
-              <p-dropdown formControlName="name"
-                          [options]="namesByTypeMap[multiFactor.controls[i].get('type')?.value]"
-                          optionLabel="label"
-                          optionValue="value"
-                          placeholder="Select Name"
-                          appendTo="body">
-              </p-dropdown>
-            </td>
+          <form [formGroup]="loginForm" (ngSubmit)="regularLogin()" class="flex flex-column gap-3">
+            <span class="p-float-label">
+              <input pInputText id="email" formControlName="email" class="w-full" placeholder="Enter your email" />
+              <label for="email">Email</label>
+            </span>
 
-            <td>
-              <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text"
-                      (click)="removeMultiRow(i)"></button>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+            <small class="p-error" *ngIf="submitted && f['email'].errors?.['required']">
+              Email is required
+            </small>
+            <small class="p-error" *ngIf="submitted && f['email'].errors?.['email']">
+              Enter a valid email
+            </small>
+
+            <span class="p-float-label">
+              <input pPassword id="password" formControlName="password" toggleMask="true" class="w-full" placeholder="Enter your password" />
+              <label for="password">Password</label>
+            </span>
+
+            <small class="p-error" *ngIf="submitted && f['password'].errors?.['required']">
+              Password is required
+            </small>
+            <small class="p-error" *ngIf="submitted && f['password'].errors?.['minlength']">
+              Password must be at least 6 characters
+            </small>
+
+            <p-button type="submit" label="Sign In" icon="pi pi-sign-in" class="w-full" styleClass="p-button-lg"></p-button>
+          </form>
+        </p-card> -->
+
+        <!-- OAuth Providers Card -->
+        <p-card class="shadow-4 border-round-xl hover:shadow-6 transition-shadow duration-300">
+          <ng-template pTemplate="header">
+            <div class="bg-green-500 text-white p-3 text-center border-round-top-xl">
+              <i class="pi pi-globe text-2xl"></i>
+              <h3 class="mt-2 mb-0">Social Login</h3>
+            </div>
+          </ng-template>
+
+          <div class="flex flex-column gap-3">
+            <p-button class="w-full p-button-outlined p-button-lg" (click)="startOAuth('Google')">
+              <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" width="20" class="mr-2"/>
+              Continue with Google
+            </p-button>
+
+            <p-button class="w-full p-button-outlined p-button-lg" (click)="startOAuth('Facebook')">
+              <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" width="20" class="mr-2"/>
+              Continue with Facebook
+            </p-button>
+
+            <p-button class="w-full p-button-outlined p-button-lg" (click)="startOAuth('GitHub')">
+              <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" width="20" class="mr-2"/>
+              Continue with GitHub
+            </p-button>
+
+            <p-button class="w-full p-button-outlined p-button-lg" (click)="startOAuth('LinkedIn')">
+              <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="20" class="mr-2"/>
+              Continue with LinkedIn
+            </p-button>
+
+            <p-button class="w-full p-button-outlined p-button-lg" (click)="startOAuth('Twitter')">
+              <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" width="20" class="mr-2"/>
+              Continue with Twitter
+            </p-button>
+
+            <p-button class="w-full p-button-outlined p-button-lg" (click)="startOAuth('Azure')">
+              <i class="pi pi-microsoft text-xl mr-2"></i>
+              Continue with Azure
+            </p-button>
+          </div>
+        </p-card>
+
+        <!-- Email OTP Card -->
+        <p-card class="shadow-4 border-round-xl hover:shadow-6 transition-shadow duration-300">
+          <ng-template pTemplate="header">
+            <div class="bg-orange-500 text-white p-3 text-center border-round-top-xl">
+              <i class="pi pi-envelope text-2xl"></i>
+              <h3 class="mt-2 mb-0">Email OTP</h3>
+            </div>
+          </ng-template>
+
+          <div class="flex flex-column gap-3">
+            <div *ngIf="!emailOtpSent" class="flex flex-column gap-3">
+              <span class="p-float-label">
+                <input pInputText [(ngModel)]="emailForOtp" name="emailForOtp" class="w-full" placeholder="Enter your email" />
+                <label>Email for OTP</label>
+              </span>
+
+              <p-button label="Send OTP" icon="pi pi-send" class="w-full p-button-lg" (click)="sendOtpToMail()"></p-button>
+            </div>
+
+            <div *ngIf="emailOtpSent" class="flex flex-column gap-3">
+              <h4 class="text-center text-primary">Enter OTP sent to {{ emailForOtp }}</h4>
+
+              <p-inputNumber [(ngModel)]="otp" [useGrouping]="false" [maxlength]="6" class="w-full" placeholder="Enter 6-digit OTP"></p-inputNumber>
+
+              <div class="flex gap-2">
+                <p-button label="Verify OTP" icon="pi pi-check" class="flex-1" (click)="verifyOtpOfMail()" [disabled]="!isOtp6()"></p-button>
+                <p-button label="Resend" class="p-button-text" (click)="sendOtpToMail()"></p-button>
+              </div>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- SMS OTP Card -->
+        <p-card class="shadow-4 border-round-xl hover:shadow-6 transition-shadow duration-300">
+          <ng-template pTemplate="header">
+            <div class="bg-purple-500 text-white p-3 text-center border-round-top-xl">
+              <i class="pi pi-mobile text-2xl"></i>
+              <h3 class="mt-2 mb-0">SMS OTP</h3>
+            </div>
+          </ng-template>
+
+          <div class="flex flex-column gap-3">
+            <div *ngIf="!smsOtpSent" class="flex flex-column gap-3">
+              <span class="p-float-label">
+                <input pInputText [(ngModel)]="phoneForSms" name="phoneForSms" class="w-full" placeholder="Enter phone number (E.164 format)" />
+                <label>Phone Number</label>
+              </span>
+
+              <p-button label="Send SMS OTP" icon="pi pi-send" class="w-full p-button-lg" (click)="sendSmsOtp()"></p-button>
+            </div>
+
+            <div *ngIf="smsOtpSent" class="flex flex-column gap-3">
+              <h4 class="text-center text-primary">Enter SMS OTP sent to {{ phoneForSms }}</h4>
+
+              <p-inputNumber [(ngModel)]="otp" [useGrouping]="false" [maxlength]="6" class="w-full" placeholder="Enter 6-digit OTP"></p-inputNumber>
+
+              <div class="flex gap-2">
+                <p-button label="Verify SMS OTP" icon="pi pi-check" class="flex-1" (click)="verifySmsOtp()" [disabled]="!isOtp6()"></p-button>
+                <p-button label="Resend" class="p-button-text" (click)="sendSmsOtp()"></p-button>
+              </div>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- WhatsApp OTP Card -->
+        <p-card class="shadow-4 border-round-xl hover:shadow-6 transition-shadow duration-300">
+          <ng-template pTemplate="header">
+            <div class="bg-green-600 text-white p-3 text-center border-round-top-xl">
+              <i class="pi pi-whatsapp text-2xl"></i>
+              <h3 class="mt-2 mb-0">WhatsApp OTP</h3>
+            </div>
+          </ng-template>
+
+          <div class="flex flex-column gap-3">
+            <div *ngIf="!whatsappOtpSent" class="flex flex-column gap-3">
+              <span class="p-float-label">
+                <input pInputText [(ngModel)]="phoneForWhatsApp" name="phoneForWhatsApp" class="w-full" placeholder="Enter phone number" />
+                <label>Phone Number</label>
+              </span>
+
+              <p-button label="Send WhatsApp OTP" icon="pi pi-send" class="w-full p-button-lg" (click)="sendWhatsappOtp()"></p-button>
+            </div>
+
+            <div *ngIf="whatsappOtpSent" class="flex flex-column gap-3">
+              <h4 class="text-center text-primary">Enter WhatsApp OTP sent to {{ phoneForWhatsApp }}</h4>
+
+              <p-inputNumber [(ngModel)]="otp" [useGrouping]="false" [maxlength]="6" class="w-full" placeholder="Enter 6-digit OTP"></p-inputNumber>
+
+              <div class="flex gap-2">
+                <p-button label="Verify WhatsApp OTP" icon="pi pi-check" class="flex-1" (click)="verifyWhatsappOtp()" [disabled]="!isOtp6()"></p-button>
+                <p-button label="Resend" class="p-button-text" (click)="sendWhatsappOtp()"></p-button>
+              </div>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- Authenticator (TOTP) Card -->
+        <!-- <p-card class="shadow-4 border-round-xl hover:shadow-6 transition-shadow duration-300">
+          <ng-template pTemplate="header">
+            <div class="bg-indigo-500 text-white p-3 text-center border-round-top-xl">
+              <i class="pi pi-qrcode text-2xl"></i>
+              <h3 class="mt-2 mb-0">Authenticator App</h3>
+            </div>
+          </ng-template>
+
+          <div class="flex flex-column gap-3">
+            <div *ngIf="!qrCode && !QrExist" class="flex flex-column gap-3">
+              <span class="p-float-label">
+                <input pInputText [(ngModel)]="authEmail" name="authEmail" class="w-full" placeholder="Enter email to setup authenticator" />
+                <label>Email for Setup</label>
+              </span>
+
+              <p-button label="Setup Authenticator" icon="pi pi-qrcode" class="w-full p-button-lg" (click)="getGoogleQRCode()"></p-button>
+            </div>
+
+            <div *ngIf="QrExist" class="flex flex-column align-items-center gap-3">
+              <p class="text-center text-sm">Authenticator already configured</p>
+              <p-inputNumber [(ngModel)]="otp" [useGrouping]="false" [maxlength]="6" class="w-full" placeholder="Enter TOTP"></p-inputNumber>
+              <p-button label="Verify OTP" icon="pi pi-check" class="w-full" (click)="verifyAuthenticator()" [disabled]="!isOtp6()"></p-button>
+            </div>
+
+            <div *ngIf="qrCode && !QrExist" class="flex flex-column align-items-center gap-3">
+              <p class="text-center text-sm mb-2">Scan this QR code with your authenticator app</p>
+              <img [src]="qrCode" width="150" height="150" alt="QR Code" class="border border-round" />
+              <p-inputNumber [(ngModel)]="otp" [useGrouping]="false" [maxlength]="6" class="w-full" placeholder="Enter TOTP"></p-inputNumber>
+              <p-button label="Verify OTP" icon="pi pi-check" class="w-full" (click)="verifyAuthenticator()" [disabled]="!isOtp6()"></p-button>
+            </div>
+          </div>
+        </p-card> -->
+
+      </div>
+
+      <!-- Footer -->
+      <div class="text-center mt-4 p-3 bg-gray-100 border-round-lg">
+        <p class="text-color-secondary mb-0">
+          <i class="pi pi-shield text-green-500 mr-2"></i>
+          Secure authentication powered by Identity Hub
+        </p>
+      </div>
+
     </div>
-
-    <!-- SUBMIT -->
-    <div class="mt-4">
-      <button pButton type="button" label="Submit" [disabled]="form.invalid" (click)="submit()"></button>
-    </div>
-
-  </form>
+  </div>
 </div>

@@ -13,6 +13,10 @@ const routes: Routes = [
   {
     path: 'user',
     component: UserDashboardComponentComponent
+  },
+   {
+    path: '**',
+    redirectTo: 'admin'
   }
 ];
 

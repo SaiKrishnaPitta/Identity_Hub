@@ -16,6 +16,8 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { RegistrationScreenComponent } from './registration-screen/registration-screen.component';
 import { TableModule } from 'primeng/table';
+import { PasswordModule } from 'primeng/password';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 
 
@@ -38,7 +40,10 @@ import { TableModule } from 'primeng/table';
     DropdownModule,
     ReactiveFormsModule,
     InputNumberModule,
-    ToastModule ,TableModule
+    ToastModule,
+    TableModule,
+    PasswordModule,
+    ProgressSpinnerModule
   ],
   providers: [MessageService]
 })

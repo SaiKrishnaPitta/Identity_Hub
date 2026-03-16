@@ -15,8 +15,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 @NgModule({
   declarations: [
     AppComponent,
-    UserDashboardComponentComponent,
-    AdminDashboardComponentComponent
   ],
   imports: [
     BrowserModule,
