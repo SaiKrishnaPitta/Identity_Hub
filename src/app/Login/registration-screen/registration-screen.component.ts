@@ -226,13 +226,14 @@ export class RegistrationScreenComponent implements OnInit {
 
   // OAuth redirects
   startOAuth(providerName: string) {
+    debugger
     const redirect = encodeURIComponent(window.location.origin);
     switch (providerName) {
       case 'Google':
         window.location.href = `https://localhost:7184/api/auth/google-login?redirectUrl=${redirect}`;
         break;
       case 'Facebook':
-        window.location.href = `https://localhost:7184/api/auth/facebook-login?redirectUrl=${redirect}`;
+        window.location.href = `https://localhost:7184/api/auth/facebook-reg-login?redirectUrl=${redirect}`;
         break;
       case 'GitHub':
         window.location.href = `https://localhost:7184/api/auth/github-login?redirectUrl=${redirect}`;
@@ -328,15 +329,15 @@ export class RegistrationScreenComponent implements OnInit {
   // WhatsApp OTP
   sendWhatsappOtp() {
     if (!this.phoneForWhatsApp) {
-      this.messageService.add({ severity: 'warn', summary: 'Phone required', detail: 'Enter phone to send WhatsApp OTP' });
+      this.messageService.add({ severity: 'warn', summary: 'Phone required', detail: 'Enter phone to send Whatsapp OTP' });
       return;
     }
     this.loginService.sendWhatsAppOtp(this.phoneForWhatsApp).subscribe((res: any) => {
       this.whatsappOtpSent = true;
-      this.messageService.add({ severity: 'success', summary: 'Sent', detail: 'WhatsApp OTP sent' });
+      this.messageService.add({ severity: 'success', summary: 'Sent', detail: 'Whatsapp OTP sent' });
     }, (err: any) => {
       console.error('sendWhatsappOtp failed', err);
-      this.messageService.add({ severity: 'error', summary: 'Failed', detail: 'Could not send WhatsApp OTP' });
+      this.messageService.add({ severity: 'error', summary: 'Failed', detail: 'Could not send Whatsapp OTP' });
     });
   }
 
@@ -355,7 +356,7 @@ export class RegistrationScreenComponent implements OnInit {
       }
     }, (err: any) => {
       console.error('verifyWhatsappOtp failed', err);
-      this.messageService.add({ severity: 'error', summary: 'Invalid', detail: 'Invalid or expired WhatsApp OTP' });
+      this.messageService.add({ severity: 'error', summary: 'Invalid', detail: 'Invalid or expired Whatsapp OTP' });
     });
   }
 

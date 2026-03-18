@@ -92,13 +92,19 @@ export class AdminDashboardComponentComponent {
   // build typesOptions and namesByTypeMap once (stable references)
   private buildOptionsFromData() {
     const types = Array.from(new Set(this.authProvidersData.map(p => p.type ?? '').filter(Boolean)));
-    this.typesOptions = types.map(t => ({ label: t, value: t }));
+    this.typesOptions = types.map(t => ({
+  label: this.formatTypeLabel(t),
+  value: t
+}));
 
     this.namesByTypeMap = {};
     types.forEach(t => {
       this.namesByTypeMap[t] = this.authProvidersData
-        .filter(p => p.type === t)
-        .map(p => ({ label: p.name, value: p.id }));
+  .filter(p => p.type === t)
+  .map(p => ({
+    label: this.formatTypeLabel(p.name),
+    value: p.id
+  }));
     });
   }
 
@@ -138,51 +144,48 @@ export class AdminDashboardComponentComponent {
   const treatAsParallelFallback = (everyGroupSingle && uniqueOrders.length > 3);
 
   // ---------- CASE: Regular Login ----------
-  if (uniqueOrders.length === 1 || treatAsParallelFallback) {
-    // treat everything as parallel providers (Regular Login)
-    this.form.patchValue({ mode: 'Regular_Login' });
+ // ---------- CASE: Regular Login ----------
+if (uniqueOrders.length === 1) {
+  this.form.patchValue({ mode: 'Regular_Login' });
 
-    // types = list of types present; name = list of provider ids (all active)
-    this.form.get('general')!.patchValue({
-      type: allTypes,
-      name: allIds
-    }, { emitEvent: false });
+  this.form.get('general')!.patchValue({
+    type: allTypes,
+    name: allIds
+  }, { emitEvent: false });
 
-    // update local options and preserve any existing selections
-    this.onGeneralTypeChange(allTypes);
-    return;
+  this.onGeneralTypeChange(allTypes);
+  return;
+}
+
+// ---------- CASE: Two Factor ----------
+if (uniqueOrders.length === 2) {
+  this.form.patchValue({ mode: 'Two_Factor_Authentication' });
+
+  this.twoFactor.clear();
+
+  for (const ord of uniqueOrders) {
+    const group = orderMap.get(ord)!;
+    const rep = group[0];
+    this.addTwoFactorRow({ type: rep.type, nameId: rep.id });
   }
 
-  // ---------- CASE: Two Factor (exactly 2 order groups) ----------
-  if (uniqueOrders.length === 2) {
-    this.form.patchValue({ mode: 'Two_Factor_Authentication' });
+  return;
+}
 
-    // clear existing rows then add one row per order-group (use first provider in each group as representative)
-    this.twoFactor.clear();
+// ---------- CASE: Multi Factor ----------
+if (uniqueOrders.length > 2) {
+  this.form.patchValue({ mode: 'Multi_Factor' });
 
-    for (const ord of uniqueOrders) {
-      const group = orderMap.get(ord)!;
-      const rep = group[0]; // representative provider for this step
-      this.addTwoFactorRow({ type: rep.type, nameId: rep.id });
-    }
+  this.multiFactor.clear();
 
-    return;
+  for (const ord of uniqueOrders) {
+    const group = orderMap.get(ord)!;
+    const rep = group[0];
+    this.addMultiRow({ type: rep.type, nameId: rep.id });
   }
 
-  // ---------- CASE: Multi Factor (> 2 order groups) ----------
-  if (uniqueOrders.length > 2) {
-    this.form.patchValue({ mode: 'Multi_Factor' });
-
-    this.multiFactor.clear();
-
-    for (const ord of uniqueOrders) {
-      const group = orderMap.get(ord)!;
-      const rep = group[0]; // representative provider for this step
-      this.addMultiRow({ type: rep.type, nameId: rep.id });
-    }
-
-    return;
-  }
+  return;
+}
 
   // Fallback: if nothing matched, keep default (General) but do not prefill
   // (shouldn't reach here)
@@ -204,10 +207,10 @@ private onGeneralTypeChange(types: string[]) {
     types.includes(p.type)
   );
 
-  this.generalNamesOptions = providers.map(p => ({
-    label: p.name,
-    value: p.id
-  }));
+ this.generalNamesOptions = providers.map(p => ({
+  label: this.formatTypeLabel(p.name),
+  value: p.id
+}));
 
   const current = general.get('name')!.value || [];
 
@@ -335,6 +338,24 @@ removeMultiRow(index: number) {
     this.twoFactor.clear();
   }
 
+}
+
+private formatTypeLabel(value: string): string {
+
+  if (!value) return '';
+
+  // exact cases (do NOT change)
+  const exactMatch: any = {
+    OTP: 'OTP'
+  };
+
+  if (exactMatch[value]) return exactMatch[value];
+
+  // convert: SocialLogin → Social Login, Multi_Factor → Multi Factor
+  return value
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/_/g, ' ')
+    .trim();
 }
 
 isSubmitDisabled(): boolean {

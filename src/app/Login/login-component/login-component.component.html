@@ -31,7 +31,7 @@
 
       <ng-container *ngIf="currentProvider">
 
-        <form *ngIf="currentProvider.name === 'Regular_Login'"
+        <form *ngIf="currentProvider.name === 'LoginWithPassword'"
               [formGroup]="loginForm"
               >
 
@@ -64,7 +64,7 @@
           </div>
         </form>
 
-        <div *ngIf="currentProvider.type === 'OAuth'">
+        <div *ngIf="currentProvider.type === 'SocialLogin'">
           <div class="flex flex-column gap-3">
             <p class="m-0 text-center">Continue with {{ currentProvider.name }}</p>
             <button pButton class="w-full p-button-outlined" (click)="startOAuth(currentProvider.name)">
@@ -80,7 +80,7 @@
           </div>
         </div>
 
-        <div *ngIf="currentProvider.name === 'Google_Microsoft_Otp_to_Mail'">
+        <div *ngIf="currentProvider.name === 'Email'">
           <div *ngIf="!emailOtpSent" class="flex flex-column gap-3">
             <span class="p-float-label">
               <input pInputText [(ngModel)]="emailForOtp" name="emailForOtp" placeholder="Email" />
@@ -122,22 +122,22 @@
           </div>
         </div>
 
-        <div *ngIf="currentProvider.name === 'WhatsApp'">
+        <div *ngIf="currentProvider.name === 'Whatsapp'">
           <div *ngIf="!whatsappOtpSent" class="flex flex-column gap-3">
             <span class="p-float-label">
               <input pInputText [(ngModel)]="phoneForWhatsApp" name="phoneForWhatsApp" placeholder="Phone number" />
             </span>
 
-            <button pButton label="Send WhatsApp OTP" icon="pi pi-whatsapp" class="w-full" (click)="sendWhatsappOtp()"></button>
+            <button pButton label="Send Whatsapp OTP" icon="pi pi-whatsapp" class="w-full" (click)="sendWhatsappOtp()"></button>
           </div>
 
           <div *ngIf="whatsappOtpSent" class="flex flex-column gap-3">
-            <h3 class="text-center">Enter WhatsApp OTP sent to {{ phoneForWhatsApp }}</h3>
+            <h3 class="text-center">Enter Whatsapp OTP sent to {{ phoneForWhatsApp }}</h3>
 
             <p-inputNumber [(ngModel)]="otp" [useGrouping]="false" [maxlength]="6"></p-inputNumber>
 
             <div class="flex gap-2">
-              <button pButton label="Verify WhatsApp OTP" icon="pi pi-check" (click)="verifyWhatsappOtp()" [disabled]="!isOtp6()"></button>
+              <button pButton label="Verify Whatsapp OTP" icon="pi pi-check" (click)="verifyWhatsappOtp()" [disabled]="!isOtp6()"></button>
               <button pButton label="Resend" class="p-button-plain" (click)="sendWhatsappOtp()"></button>
             </div>
           </div>
